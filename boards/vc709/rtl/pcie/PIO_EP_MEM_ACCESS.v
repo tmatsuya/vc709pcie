@@ -113,8 +113,8 @@ module PIO_EP_MEM_ACCESS #(
   localparam PIO_MEM_ACCESS_WR_READ    = 3'b010;
   localparam PIO_MEM_ACCESS_WR_WRITE   = 3'b100;
 
-  localparam PIO_MRD_TR_GEN_REG = 11'h3AA;
-  localparam PIO_INTR_GEN_REG   = 11'h3BB;
+  localparam PIO_MRD_TR_GEN_REG = 14'h3AA;
+  localparam PIO_INTR_GEN_REG   = 14'h3BB;
 
 
   reg   [31:0]     rd_data_raw_o;
