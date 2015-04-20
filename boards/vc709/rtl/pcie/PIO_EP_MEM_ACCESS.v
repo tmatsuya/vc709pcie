@@ -79,7 +79,7 @@ module PIO_EP_MEM_ACCESS #(
   //  Read Port
 
 
-  input      [10:0]    rd_addr,
+  input      [13:0]    rd_addr,
   input      [3:0]     rd_be,
   input                trn_sent,
   output     [31:0]    rd_data,
@@ -88,7 +88,7 @@ module PIO_EP_MEM_ACCESS #(
   //  Write Port
 
 
-  input      [10:0]    wr_addr,
+  input      [13:0]    wr_addr,
   input      [7:0]     wr_be,
   input      [63:0]    wr_data,
   input                wr_en,
@@ -120,7 +120,7 @@ module PIO_EP_MEM_ACCESS #(
   reg   [31:0]     rd_data_raw_o;
 
   reg   [1:0]      dword_count;
-  reg   [10:0]     wr_addr_inc;
+  reg   [13:0]     wr_addr_inc;
 
   wire  [31:0]     rd_data0_o, rd_data1_o, rd_data2_o, rd_data3_o;
 
@@ -184,7 +184,7 @@ module PIO_EP_MEM_ACCESS #(
         wr_mem_state <= #TCQ PIO_MEM_ACCESS_WR_RST;
 
         dword_count <= #TCQ 2'b00;
-        wr_addr_inc <= #TCQ 11'b0;
+        wr_addr_inc <= #TCQ 14'b0;
 
       end else begin
 
@@ -333,7 +333,7 @@ module PIO_EP_MEM_ACCESS #(
 
   always @* // (wr_addr or pre_wr_data0_q or pre_wr_data1_q or pre_wr_data2_q or pre_wr_data3_q) begin
    begin
-    case ({wr_addr[10:9]}) // synthesis parallel_case full_case
+    case ({wr_addr[13:12]}) // synthesis parallel_case full_case
 
       2'b00 : w_pre_wr_data = w_pre_wr_data0;
       2'b01 : w_pre_wr_data = w_pre_wr_data1;
@@ -348,16 +348,16 @@ module PIO_EP_MEM_ACCESS #(
   //  Memory Read Controller
 
 
-  wire        rd_data0_en = {rd_addr[10:9]  == 2'b00};
-  wire        rd_data1_en = {rd_addr[10:9]  == 2'b01};
-  wire        rd_data2_en = {rd_addr[10:9]  == 2'b10};
-  wire        rd_data3_en = {rd_addr[10:9]  == 2'b11};
+  wire        rd_data0_en = {rd_addr[13:12]  == 2'b00};
+  wire        rd_data1_en = {rd_addr[13:12]  == 2'b01};
+  wire        rd_data2_en = {rd_addr[13:12]  == 2'b10};
+  wire        rd_data3_en = {rd_addr[13:12]  == 2'b11};
 
 
   always @(rd_addr or rd_data0_o or rd_data1_o or rd_data2_o or rd_data3_o)
     begin
 
-    case ({rd_addr[10:9]}) // synthesis parallel_case full_case
+    case ({rd_addr[13:12]}) // synthesis parallel_case full_case
 
       2'b00 : rd_data_raw_o = rd_data0_o;
       2'b01 : rd_data_raw_o = rd_data1_o;
@@ -379,45 +379,45 @@ module PIO_EP_MEM_ACCESS #(
 
                     .clk_i(user_clk),
 
-                    .a_rd_a_i_0(rd_addr[8:0]),              // I [8:0]
+                    .a_rd_a_i_0(rd_addr[11:0]),              // I [8:0]
                     .a_rd_en_i_0(rd_data0_en),                // I [1:0]
                     .a_rd_d_o_0(rd_data0_o),                  // O [31:0]
 
-                    .b_wr_a_i_0(wr_addr_inc[8:0]),              // I [8:0]
+                    .b_wr_a_i_0(wr_addr_inc[11:0]),              // I [8:0]
                     .b_wr_d_i_0(post_wr_data),                // I [31:0]
-                    .b_wr_en_i_0({write_en & (wr_addr[10:9] == 2'b00)}), // I
+                    .b_wr_en_i_0({write_en & (wr_addr[13:12] == 2'b00)}), // I
                     .b_rd_d_o_0(w_pre_wr_data0[31:0]),        // O [31:0]
-                    .b_rd_en_i_0({wr_addr[10:9] == 2'b00}), // I
+                    .b_rd_en_i_0({wr_addr[13:12] == 2'b00}), // I
 
-                    .a_rd_a_i_1(rd_addr[8:0]),              // I [8:0]
+                    .a_rd_a_i_1(rd_addr[11:0]),              // I [8:0]
                     .a_rd_en_i_1(rd_data1_en),                // I [1:0]
                     .a_rd_d_o_1(rd_data1_o),                  // O [31:0]
 
-                    .b_wr_a_i_1(wr_addr_inc[8:0]),              // [8:0]
+                    .b_wr_a_i_1(wr_addr_inc[11:0]),              // [8:0]
                     .b_wr_d_i_1(post_wr_data),                // [31:0]
-                    .b_wr_en_i_1({write_en & (wr_addr[10:9] == 2'b01)}), // I
+                    .b_wr_en_i_1({write_en & (wr_addr[13:12] == 2'b01)}), // I
                     .b_rd_d_o_1(w_pre_wr_data1[31:0]),        // [31:0]
-                    .b_rd_en_i_1({wr_addr[10:9] == 2'b01}), // I
+                    .b_rd_en_i_1({wr_addr[13:12] == 2'b01}), // I
 
-                    .a_rd_a_i_2(rd_addr[8:0]),              // I [8:0]
+                    .a_rd_a_i_2(rd_addr[11:0]),              // I [8:0]
                     .a_rd_en_i_2(rd_data2_en),                // I [1:0]
                     .a_rd_d_o_2(rd_data2_o),                  // O [31:0]
 
-                    .b_wr_a_i_2(wr_addr_inc[8:0]),              // I [8:0]
+                    .b_wr_a_i_2(wr_addr_inc[11:0]),              // I [8:0]
                     .b_wr_d_i_2(post_wr_data),                // I [31:0]
-                    .b_wr_en_i_2({write_en & (wr_addr[10:9] == 2'b10)}), // I
+                    .b_wr_en_i_2({write_en & (wr_addr[13:12] == 2'b10)}), // I
                     .b_rd_d_o_2(w_pre_wr_data2[31:0]),        // I [31:0]
-                    .b_rd_en_i_2({wr_addr[10:9] == 2'b10}), // I
+                    .b_rd_en_i_2({wr_addr[13:12] == 2'b10}), // I
 
-                    .a_rd_a_i_3(rd_addr[8:0]),              // [8:0]
+                    .a_rd_a_i_3(rd_addr[11:0]),              // [8:0]
                     .a_rd_en_i_3(rd_data3_en),                // [1:0]
                     .a_rd_d_o_3(rd_data3_o),                  // O [31:0]
 
-                    .b_wr_a_i_3(wr_addr_inc[8:0]),              // I [8:0]
+                    .b_wr_a_i_3(wr_addr_inc[11:0]),              // I [8:0]
                     .b_wr_d_i_3(post_wr_data),                // I [31:0]
-                    .b_wr_en_i_3({write_en & (wr_addr[10:9] == 2'b11)}), // I
+                    .b_wr_en_i_3({write_en & (wr_addr[13:12] == 2'b11)}), // I
                     .b_rd_d_o_3(w_pre_wr_data3[31:0]),        // I [31:0]
-                    .b_rd_en_i_3({wr_addr[10:9] == 2'b11})  // I
+                    .b_rd_en_i_3({wr_addr[13:12] == 2'b11})  // I
 
                    );
 
