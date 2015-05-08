@@ -47,6 +47,7 @@ set_property top ${rtl_top} [current_fileset]
 #    add_files -fileset constrs_1 -norecurse ../constraints/v7_xt_conn_trd.xdc
 #    add_files -fileset constrs_1 -norecurse ../constraints/${bit_settings}
     add_files -fileset constrs_1 -norecurse ../constraints/xilinx_pcie3_7x_ep_x8g3_VC709.xdc
+#    add_files -fileset constrs_1 -norecurse ../constraints/xilinx_pcie3_7x_ep_x8g3_SUME.xdc
 #  }
 
 
